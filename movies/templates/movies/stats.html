@@ -1,0 +1,237 @@
+{% extends "movies/base.html" %}
+
+{% block title %}Estadisticas{% endblock %}
+
+{% comment %}
+Los servicios de reports NO anotan nada sobre ``Movie``: devuelven dicts ya
+planos con las claves fijadas en ``report_service.py`` (``total_ratings``,
+``average_rating``, ``max_rating``, ``min_rating``, ``ratings_per_movie``,
+``total_movies``, ``avg_revenue_estimate``, ``top_rated_movies``). ``stats_view``
+no anade nada, asi que la plantilla no puede leer ningun atributo: si alguna clave
+cambia de nombre, sale vacio y la pagina lo enseña.
+
+``max_rating`` / ``min_rating`` / ``highest_rating`` / ``lowest_rating`` usan 0
+como centinela de "no hay valoraciones" (0 esta fuera del rango valido 1-10), asi
+que se pintan como "Sin datos" en vez de un "0/10" que seria mentira.
+{% endcomment %}
+
+{% block content %}
+<div class="container-xl">
+    <a class="btn btn-link px-0 mb-2" href="{% url 'movies:home' %}">
+        <i class="bi bi-arrow-left" aria-hidden="true"></i> Volver al catalogo
+    </a>
+    <h2 class="mb-4">Estadisticas</h2>
+
+    <section class="mb-5">
+        <h3 class="h5 mb-3">
+            <i class="bi bi-graph-up" aria-hidden="true"></i> Estadisticas Generales de Valoraciones
+        </h3>
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-4 g-3">
+            <div class="col">
+                <div class="stat-card">
+                    <span class="stat-label d-flex align-items-center gap-2">
+                        <i class="bi bi-list-check" aria-hidden="true"></i> Valoraciones totales
+                    </span>
+                    <span class="stat-value">{{ rating_stats.total_ratings }}</span>
+                </div>
+            </div>
+            <div class="col">
+                <div class="stat-card">
+                    <span class="stat-label d-flex align-items-center gap-2">
+                        <i class="bi bi-star-fill" aria-hidden="true"></i> Puntuacion media
+                    </span>
+                    <span class="stat-value">
+                        {% if rating_stats.average_rating %}
+                        {{ rating_stats.average_rating|floatformat:2 }}/10
+                        {% else %}
+                        <span class="stat-value-sm">Sin datos</span>
+                        {% endif %}
+                    </span>
+                </div>
+            </div>
+            <div class="col">
+                <div class="stat-card">
+                    <span class="stat-label d-flex align-items-center gap-2">
+                        <i class="bi bi-graph-up-arrow" aria-hidden="true"></i> Puntuacion maxima
+                    </span>
+                    <span class="stat-value">
+                        {% if rating_stats.max_rating %}
+                        {{ rating_stats.max_rating }}/10
+                        {% else %}
+                        <span class="stat-value-sm">Sin datos</span>
+                        {% endif %}
+                    </span>
+                </div>
+            </div>
+            <div class="col">
+                <div class="stat-card">
+                    <span class="stat-label d-flex align-items-center gap-2">
+                        <i class="bi bi-graph-down-arrow" aria-hidden="true"></i> Puntuacion minima
+                    </span>
+                    <span class="stat-value">
+                        {% if rating_stats.min_rating %}
+                        {{ rating_stats.min_rating }}/10
+                        {% else %}
+                        <span class="stat-value-sm">Sin datos</span>
+                        {% endif %}
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        {% if rating_stats.ratings_per_movie %}
+        <h4 class="h6 mt-4 mb-2">Valoraciones por pelicula</h4>
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <caption class="visually-hidden">Numero de valoraciones recibidas por cada pelicula.</caption>
+                <thead>
+                    <tr>
+                        <th scope="col">Pelicula</th>
+                        <th scope="col" class="text-end">Numero de valoraciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in rating_stats.ratings_per_movie %}
+                    <tr>
+                        <td>{{ item.movie__title }}</td>
+                        <td class="text-end">{{ item.count }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% endif %}
+    </section>
+
+    <section class="mb-5">
+        <h3 class="h5 mb-3">
+            <i class="bi bi-cash-stack" aria-hidden="true"></i> Estimacion de Ingresos
+        </h3>
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-4 g-3">
+            <div class="col">
+                <div class="stat-card">
+                    <span class="stat-label d-flex align-items-center gap-2">
+                        <i class="bi bi-collection" aria-hidden="true"></i> Total de peliculas
+                    </span>
+                    <span class="stat-value">{{ revenue_estimate.total_movies }}</span>
+                </div>
+            </div>
+            <div class="col">
+                <div class="stat-card">
+                    <span class="stat-label d-flex align-items-center gap-2">
+                        <i class="bi bi-cash-coin" aria-hidden="true"></i> Estimacion de ingresos
+                    </span>
+                    <span class="stat-value stat-value-sm">
+                        ${{ revenue_estimate.avg_revenue_estimate|floatformat:2 }}
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        {% if revenue_estimate.top_rated_movies %}
+        <h4 class="h6 mt-4 mb-2">Top 10 peliculas mejor valoradas</h4>
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <caption class="visually-hidden">Peliculas mejor valoradas, de mayor a menor media.</caption>
+                <thead>
+                    <tr>
+                        <th scope="col">Pelicula</th>
+                        <th scope="col" class="text-end">Puntuacion media</th>
+                        <th scope="col" class="text-end">Valoraciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for movie in revenue_estimate.top_rated_movies %}
+                    <tr>
+                        <td>{{ movie.title }}</td>
+                        <td class="text-end">
+                            <span class="rating-value">{{ movie.avg_rating|floatformat:2 }}/10</span>
+                        </td>
+                        <td class="text-end">{{ movie.rating_count }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% endif %}
+    </section>
+
+    {% if user.is_authenticated and user_stats %}
+    <section>
+        <h3 class="h5 mb-3">
+            <i class="bi bi-people" aria-hidden="true"></i> Estadisticas de Usuario
+        </h3>
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-4 g-3">
+            <div class="col">
+                <div class="stat-card">
+                    <span class="stat-label d-flex align-items-center gap-2">
+                        <i class="bi bi-graph-up" aria-hidden="true"></i> Valoraciones realizadas
+                    </span>
+                    <span class="stat-value">{{ user_stats.rating_count }}</span>
+                </div>
+            </div>
+            <div class="col">
+                <div class="stat-card">
+                    <span class="stat-label d-flex align-items-center gap-2">
+                        <i class="bi bi-star-fill" aria-hidden="true"></i> Puntuacion media
+                    </span>
+                    <span class="stat-value">
+                        {% if user_stats.average_rating %}
+                        {{ user_stats.average_rating|floatformat:2 }}/10
+                        {% else %}
+                        <span class="stat-value-sm">Sin datos</span>
+                        {% endif %}
+                    </span>
+                </div>
+            </div>
+            <div class="col">
+                <div class="stat-card">
+                    <span class="stat-label d-flex align-items-center gap-2">
+                        <i class="bi bi-heart-fill" aria-hidden="true"></i> Favoritas
+                    </span>
+                    <span class="stat-value">{{ user_stats.favorite_count }}</span>
+                </div>
+            </div>
+            <div class="col">
+                <div class="stat-card">
+                    <span class="stat-label d-flex align-items-center gap-2">
+                        <i class="bi bi-tag-fill" aria-hidden="true"></i> Genero mas valorado
+                    </span>
+                    <span class="stat-value stat-value-sm">
+                        {{ user_stats.most_rated_genre|default:"N/A" }}
+                    </span>
+                </div>
+            </div>
+            <div class="col">
+                <div class="stat-card">
+                    <span class="stat-label d-flex align-items-center gap-2">
+                        <i class="bi bi-graph-up-arrow" aria-hidden="true"></i> Puntuacion mas alta
+                    </span>
+                    <span class="stat-value">
+                        {% if user_stats.highest_rating %}
+                        {{ user_stats.highest_rating }}/10
+                        {% else %}
+                        <span class="stat-value-sm">Sin datos</span>
+                        {% endif %}
+                    </span>
+                </div>
+            </div>
+            <div class="col">
+                <div class="stat-card">
+                    <span class="stat-label d-flex align-items-center gap-2">
+                        <i class="bi bi-graph-down-arrow" aria-hidden="true"></i> Puntuacion mas baja
+                    </span>
+                    <span class="stat-value">
+                        {% if user_stats.lowest_rating %}
+                        {{ user_stats.lowest_rating }}/10
+                        {% else %}
+                        <span class="stat-value-sm">Sin datos</span>
+                        {% endif %}
+                    </span>
+                </div>
+            </div>
+        </div>
+    </section>
+    {% endif %}
+</div>
+{% endblock %}

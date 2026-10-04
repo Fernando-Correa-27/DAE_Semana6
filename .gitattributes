@@ -1,0 +1,12 @@
+# Activos binarios: sin conversiones de fin de linea ni diff de texto.
+# Bootstrap, Bootstrap Icons y los catálogos de traducciones compiladas
+# deben guardarse byte a byte para no corromperse.
+*.mo    binary
+*.woff  binary
+*.woff2 binary
+*.jpg   binary
+*.jpeg  binary
+*.png   binary
+*.gif   binary
+*.ico   binary
+*.pdf   binary

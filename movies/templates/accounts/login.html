@@ -1,0 +1,82 @@
+{% extends "movies/base.html" %}
+
+{% block title %}Iniciar sesion{% endblock %}
+
+{% comment %}
+Los mensajes flash NO se renderizan aqui: base.html ya los pinta. Si se
+volvieran a anadir, "Credenciales incorrectas." apareceria dos veces.
+Los campos se escriben a mano (no {{ form.field }}) porque LoginForm lleva
+`class="form-input"` en el widget y hace falta `form-control` de Bootstrap;
+`form-input` no existe en la hoja de estilos. El tipo sale de
+`field.widget.input_type` (BoundField no delega `input_type`).
+{% endcomment %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-12 col-sm-9 col-md-7 col-lg-5">
+        <div class="card shadow-sm">
+            <div class="card-body p-4">
+                <h1 class="h3 text-center mb-1">
+                    <i class="bi bi-box-arrow-in-right me-2" aria-hidden="true"></i>Iniciar sesion
+                </h1>
+                <p class="text-center mb-4">Accede para valorar peliculas y guardar tus favoritas.</p>
+
+                {% if form.non_field_errors %}
+                <div class="alert alert-danger" role="alert">
+                    {% for error in form.non_field_errors %}
+                    <div>{{ error }}</div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+                <form method="post" novalidate>
+                    {% csrf_token %}
+
+                    <div class="mb-3">
+                        <label class="form-label" for="{{ form.username.id_for_label }}">{{ form.username.label }}</label>
+                        <input type="{{ form.username.field.widget.input_type }}"
+                               name="{{ form.username.name }}"
+                               id="{{ form.username.id_for_label }}"
+                               class="form-control{% if form.username.errors %} is-invalid{% endif %}"
+                               value="{{ form.username.value|default:'' }}"
+                               placeholder="Usuario"
+                               autocomplete="username"
+                               aria-describedby{% if form.username.errors %}="error-{{ form.username.id_for_label }}"{% else %}="{{ form.username.id_for_label }}-ayuda"{% endif %}
+                               {% if form.username.errors %}aria-invalid="true"{% endif %}
+                               required autofocus>
+                        <div class="form-text" id="{{ form.username.id_for_label }}-ayuda">Tal como aparece en tu cuenta.</div>
+                        {% for error in form.username.errors %}
+                        <div class="invalid-feedback" id="error-{{ form.username.id_for_label }}">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label" for="{{ form.password.id_for_label }}">{{ form.password.label }}</label>
+                        <input type="{{ form.password.field.widget.input_type }}"
+                               name="{{ form.password.name }}"
+                               id="{{ form.password.id_for_label }}"
+                               class="form-control{% if form.password.errors %} is-invalid{% endif %}"
+                               value=""
+                               placeholder="Contrasena"
+                               autocomplete="current-password"
+                               aria-describedby{% if form.password.errors %}="error-{{ form.password.id_for_label }}"{% else %}="{{ form.password.id_for_label }}-ayuda"{% endif %}
+                               {% if form.password.errors %}aria-invalid="true"{% endif %}
+                               required>
+                        <div class="form-text" id="{{ form.password.id_for_label }}-ayuda">La contrasena con la que te registraste.</div>
+                        {% for error in form.password.errors %}
+                        <div class="invalid-feedback" id="error-{{ form.password.id_for_label }}">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100">Entrar</button>
+                </form>
+
+                <p class="text-center mt-3 mb-0">
+                    &iquest;No tienes cuenta?
+                    <a href="{% url 'accounts:register' %}">Registrate aqui</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

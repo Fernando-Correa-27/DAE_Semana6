@@ -1,0 +1,66 @@
+{% comment %}
+Formulario de edicion de perfil, compartido por recommend.html y profile.html.
+
+Ambas vistas exponen ``profile_form`` (una ``ProfileForm``) y ambas lo pintaban
+con 27 lineas identicas; el markup vive aqui una sola vez. Es el mismo motivo
+por el que existe ``_movie_card.html``.
+
+Interfaz
+--------
+form   la ``ProfileForm`` ya construida por la vista. Solo se leen
+        ``username`` y ``email``: son los dos unicos campos de ``ProfileForm``,
+        asi que no hay que enumerarlos ni iterarlos.
+
+Deliberadamente NO envuelve el formulario en una ``card``: el contenedor depende
+de la pagina (en recommend.html el formulario va solo en su tarjeta; en
+profile.html comparte columna con "Datos actuales").
+
+Los campos se escriben a mano en vez de con ``{{ form.username }}`` porque
+``ProfileForm`` no declara widgets ni una clase de crispy/L crispy: el widget por
+defecto saldria sin ``form-control`` y sin ningun estilo, que es justo el
+problema que este paso viene a arreglar.
+{% endcomment %}
+<form method="post" class="row g-3 align-items-end">
+    {% csrf_token %}
+    {% comment %}
+    ``profile_submit`` es el discriminador de las dos vistas: ambas atienden un
+    POST de perfil, y ambas lo descartan si la clave no viene.
+    {% endcomment %}
+    <input type="hidden" name="profile_submit" value="1">
+
+    <div class="col-12 col-sm-6 col-lg-4">
+        <label class="form-label" for="{{ form.username.id_for_label }}">{{ form.username.label }}</label>
+        <input type="text" name="username" id="{{ form.username.id_for_label }}"
+               value="{{ form.username.value|default_if_none:'' }}" maxlength="150" required
+               class="form-control{% if form.username.errors %} is-invalid{% endif %}">
+        {% for error in form.username.errors %}
+        <div class="invalid-feedback">{{ error }}</div>
+        {% endfor %}
+    </div>
+
+    <div class="col-12 col-sm-6 col-lg-4">
+        <label class="form-label" for="{{ form.email.id_for_label }}">{{ form.email.label }}</label>
+        <input type="email" name="email" id="{{ form.email.id_for_label }}"
+               value="{{ form.email.value|default_if_none:'' }}" maxlength="254"
+               class="form-control{% if form.email.errors %} is-invalid{% endif %}">
+        {% for error in form.email.errors %}
+        <div class="invalid-feedback">{{ error }}</div>
+        {% endfor %}
+    </div>
+
+    <div class="col-12 col-lg-4">
+        <button type="submit" class="btn btn-primary w-100">
+            <i class="bi bi-check-lg" aria-hidden="true"></i> Guardar perfil
+        </button>
+    </div>
+
+    {% comment %}
+    Los errores de campo ya salen junto a su input, asi que aqui solo quedan los
+    "non field" (p. ej. un email repetido que detecta ``update_profile``).
+    {% endcomment %}
+    {% for error in form.non_field_errors %}
+    <div class="col-12">
+        <div class="alert alert-danger mb-0" role="alert">{{ error }}</div>
+    </div>
+    {% endfor %}
+</form>

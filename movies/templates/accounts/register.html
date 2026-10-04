@@ -1,0 +1,129 @@
+{% extends "movies/base.html" %}
+
+{% block title %}Crear cuenta{% endblock %}
+
+{% comment %}
+Los mensajes flash NO se renderizan aqui: base.html ya los pinta. Si se
+volvieran a anadir, "Por favor corrige los errores del formulario."
+apareceria dos veces.
+Los campos se escriben a mano (no {{ form.field }}) porque RegisterForm lleva
+`class="form-input"` en el widget y hace falta `form-control` de Bootstrap;
+`form-input` no existe en la hoja de estilos. El tipo sale de
+`field.widget.input_type` (BoundField no delega `input_type`).
+{% endcomment %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-12 col-sm-9 col-md-7 col-lg-5">
+        <div class="card shadow-sm">
+            <div class="card-body p-4">
+                <h1 class="h3 text-center mb-1">
+                    <i class="bi bi-person-plus me-2" aria-hidden="true"></i>Crear cuenta
+                </h1>
+                <p class="text-center mb-4">Registrate para valorar y guardar tus favoritas.</p>
+
+                {% if form.non_field_errors %}
+                <div class="alert alert-danger" role="alert">
+                    {% for error in form.non_field_errors %}
+                    <div>{{ error }}</div>
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+                <form method="post" novalidate>
+                    {% csrf_token %}
+
+                    <div class="mb-3">
+                        <label class="form-label" for="{{ form.username.id_for_label }}">
+                            {{ form.username.label }}<span class="text-danger" aria-hidden="true">*</span>
+                        </label>
+                        <input type="{{ form.username.field.widget.input_type }}"
+                               name="{{ form.username.name }}"
+                               id="{{ form.username.id_for_label }}"
+                               class="form-control{% if form.username.errors %} is-invalid{% endif %}"
+                               value="{{ form.username.value|default:'' }}"
+                               placeholder="Usuario"
+                               autocomplete="username"
+                               aria-describedby="ayuda-{{ form.username.id_for_label }}{% if form.username.errors %} error-{{ form.username.id_for_label }}{% endif %}"
+                               {% if form.username.errors %}aria-invalid="true"{% endif %}
+                               required autofocus>
+                        <div class="form-text" id="ayuda-{{ form.username.id_for_label }}">Minimo 3 caracteres. No podras cambiarlo despues.</div>
+                        {% for error in form.username.errors %}
+                        <div class="invalid-feedback" id="error-{{ form.username.id_for_label }}">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label" for="{{ form.email.id_for_label }}">
+                            {{ form.email.label }}
+                        </label>
+                        <input type="{{ form.email.field.widget.input_type }}"
+                               name="{{ form.email.name }}"
+                               id="{{ form.email.id_for_label }}"
+                               class="form-control{% if form.email.errors %} is-invalid{% endif %}"
+                               value="{{ form.email.value|default:'' }}"
+                               placeholder="correo@ejemplo.com"
+                               autocomplete="email"
+                               aria-describedby="ayuda-{{ form.email.id_for_label }}{% if form.email.errors %} error-{{ form.email.id_for_label }}{% endif %}"
+                               {% if form.email.errors %}aria-invalid="true"{% endif %}>
+                        <div class="form-text" id="ayuda-{{ form.email.id_for_label }}">Opcional. Solo se usa para identificar tu cuenta.</div>
+                        {% for error in form.email.errors %}
+                        <div class="invalid-feedback" id="error-{{ form.email.id_for_label }}">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label" for="{{ form.password1.id_for_label }}">
+                            {{ form.password1.label }}<span class="text-danger" aria-hidden="true">*</span>
+                        </label>
+                        <input type="{{ form.password1.field.widget.input_type }}"
+                               name="{{ form.password1.name }}"
+                               id="{{ form.password1.id_for_label }}"
+                               class="form-control{% if form.password1.errors %} is-invalid{% endif %}"
+                               value=""
+                               placeholder="Contrasena"
+                               autocomplete="new-password"
+                               aria-describedby="ayuda-{{ form.password1.id_for_label }}{% if form.password1.errors %} error-{{ form.password1.id_for_label }}{% endif %}"
+                               {% if form.password1.errors %}aria-invalid="true"{% endif %}
+                               required>
+                        <div class="form-text" id="ayuda-{{ form.password1.id_for_label }}">Minimo 8 caracteres.</div>
+                        {% for error in form.password1.errors %}
+                        <div class="invalid-feedback" id="error-{{ form.password1.id_for_label }}">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label" for="{{ form.password2.id_for_label }}">
+                            {{ form.password2.label }}<span class="text-danger" aria-hidden="true">*</span>
+                        </label>
+                        <input type="{{ form.password2.field.widget.input_type }}"
+                               name="{{ form.password2.name }}"
+                               id="{{ form.password2.id_for_label }}"
+                               class="form-control{% if form.password2.errors %} is-invalid{% endif %}"
+                               value=""
+                               placeholder="Confirma tu contrasena"
+                               autocomplete="new-password"
+                               aria-describedby="ayuda-{{ form.password2.id_for_label }}{% if form.password2.errors %} error-{{ form.password2.id_for_label }}{% endif %}"
+                               {% if form.password2.errors %}aria-invalid="true"{% endif %}
+                               required>
+                        <div class="form-text" id="ayuda-{{ form.password2.id_for_label }}">Repite la contrasena anterior.</div>
+                        {% for error in form.password2.errors %}
+                        <div class="invalid-feedback" id="error-{{ form.password2.id_for_label }}">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100">Registrarse</button>
+                </form>
+
+                <p class="form-text mt-3 mb-0">
+                    Los campos marcados con <span class="text-danger" aria-hidden="true">*</span> son obligatorios.
+                </p>
+                <p class="text-center mt-2 mb-0">
+                    &iquest;Ya tienes cuenta?
+                    <a href="{% url 'accounts:login' %}">Inicia sesion</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,40 @@
+{% extends "movies/base.html" %}
+
+{% block title %}Catalogo de Peliculas{% endblock %}
+
+{% block content %}
+<h2>Todas las peliculas</h2>
+{% if movies %}
+<div class="movie-grid">
+    {% for movie in movies %}
+    <div class="movie-card">
+        {% if movie.cover %}
+        <img src="{{ movie.cover.url }}" alt="{{ movie.title }}">
+        {% else %}
+        <div class="no-cover">Sin imagen</div>
+        {% endif %}
+        <div class="info">
+            <h3>{{ movie.title }}</h3>
+            <span class="year">{{ movie.release_year }}</span>
+            <div class="rating">
+                {% if movie.movie_avg_rating %}
+                {{ movie.movie_avg_rating|floatformat:2 }}/10
+                {% else %}
+                Sin valoraciones
+                {% endif %}
+            </div>
+            <div class="genres-list">
+                {% for genre in movie.genres.all %}
+                <a href="{% url 'movies:recommend' genre.name %}" class="genre-tag">{{ genre.name }}</a>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="empty-state">
+    <p>No hay peliculas en el catalogo. Agregalas desde el admin.</p>
+</div>
+{% endif %}
+{% endblock %}

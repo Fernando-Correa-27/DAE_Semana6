@@ -1,0 +1,649 @@
+/* =============================================================================
+   Catalogo de Peliculas - main.css
+   Diseno "Lavanda Pastel": pastel en superficies y bordes, tinta oscura para
+   texto. Ningun pastel se usa como color de texto.
+   Carga DESPUES de Bootstrap para que estas reglas prevaillezcan sobre las suyas.
+   ========================================================================== */
+
+/* -----------------------------------------------------------------------------
+   1. Paleta
+   -------------------------------------------------------------------------- */
+
+:root {
+  --c-canvas:      #F6F5FA;
+  --c-surface:     #FFFFFF;
+  --c-surface-alt: #FBFAFE;
+  --c-border:      #E4E1EF;
+  --c-border-soft: #F0EEF7;
+
+  --c-ink:    #1E1B2E;  /* titulos */
+  --c-ink-2:  #4A4560;  /* texto secundario */
+  --c-ink-3:  #6B6683;  /* texto muted, 5.46:1 */
+
+  --c-primary-50:  #EEF0FE;
+  --c-primary-100: #E0E4FC;
+  --c-primary-200: #C7CDF8;
+  --c-primary-400: #8B93E8;  /* decorativo SOLO */
+  --c-primary-600: #4C4FC4;  /* texto/boton 6.52:1 */
+  --c-primary-700: #3B3E9E;
+  --c-primary-900: #23255C;  /* navbar 14.08:1 */
+
+  --c-star-100: #FDF0D5;
+  --c-star-600: #8A5A05;      /* TEXTO 5.93:1 */
+  --c-rose-100: #FCE4EC;
+  --c-rose-500: #D6336C;      /* relleno icono */
+  --c-rose-700: #9C1C4A;      /* TEXTO 7.87:1 */
+
+  --c-success-100: #DFF3E4;  --c-success-700: #1B6B3A;
+  --c-warning-100: #FEF0D9;  --c-warning-700: #8A5A05;
+  --c-danger-100:  #FCE0E0;  --c-danger-700:  #9E2A2B;
+  --c-info-100:    #DEEEFB;  --c-info-700:    #0B5A7A;
+
+  --c-focus: #4C4FC4;
+
+  --bs-focus-ring-color: rgba(76, 79, 196, .25);
+  --bs-body-color: var(--c-ink-2);
+  --bs-body-bg: var(--c-canvas);
+  --bs-border-color: var(--c-border);
+
+  /* Canales RGB: alimentan las utilidades .bg-*, .text-bg-*, .border-*,
+     .link-* y los degradados de Bootstrap, que no aceptan nombres de color. */
+  --bs-primary-rgb:   76, 79, 196;
+  --bs-primary-600-rgb: 76, 79, 196;
+  --bs-primary-700-rgb: 59, 62, 158;
+  --bs-primary-900-rgb: 35, 37, 92;
+  --bs-secondary-rgb: 74, 69, 96;
+  --bs-body-color-rgb: 74, 69, 96;
+  --bs-body-bg-rgb:    246, 245, 250;
+  --bs-border-color-rgb: 228, 225, 239;
+  --bs-link-color-rgb: 76, 79, 196;
+  --bs-link-hover-color-rgb: 59, 62, 158;
+  --bs-secondary-color-rgb: 107, 102, 131;
+  --bs-emphasis-color-rgb: 30, 27, 46;
+}
+
+/* -----------------------------------------------------------------------------
+   2. Bootstrap base
+   -------------------------------------------------------------------------- */
+
+body {
+  background-color: var(--c-canvas);
+  color: var(--c-ink-2);
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4, h5, h6, .navbar-brand, h1 a, h2 a, h3 a {
+  color: var(--c-ink);
+}
+
+a { color: var(--c-primary-600); }
+a:hover,
+a:focus { color: var(--c-primary-700); }
+
+hr, .hr {
+  border-color: var(--c-border-soft);
+  opacity: 1;
+}
+
+code, pre, .text-muted, .small, .form-text { color: var(--c-ink-3); }
+
+::selection {
+  background-color: var(--c-primary-200);
+  color: var(--c-ink);
+}
+
+/* -----------------------------------------------------------------------------
+   3. Overrides por COMPONENTE
+   Bootstrap 5.3 declara las variables de cada componente en la regla del
+   propio componente, asi que declarar `--bs-primary` en :root NO recolorea
+   `.btn-primary`. Hay que sobrescribir las especificas de cada clase.
+   -------------------------------------------------------------------------- */
+
+/* --- Botones --------------------------------------------------------------- */
+
+.btn-primary {
+  --bs-btn-bg: var(--c-primary-600);
+  --bs-btn-border-color: var(--c-primary-600);
+  --bs-btn-hover-bg: var(--c-primary-700);
+  --bs-btn-hover-border-color: var(--c-primary-700);
+  --bs-btn-active-bg: var(--c-primary-700);
+  --bs-btn-active-border-color: var(--c-primary-700);
+  --bs-btn-disabled-bg: var(--c-primary-200);
+  --bs-btn-disabled-border-color: var(--c-primary-200);
+  --bs-btn-color: #fff;
+  --bs-btn-hover-color: #fff;
+  --bs-btn-active-color: #fff;
+  --bs-btn-disabled-color: var(--c-ink-3);
+}
+
+.btn-secondary {
+  --bs-btn-bg: var(--c-ink-3);
+  --bs-btn-border-color: var(--c-ink-3);
+  --bs-btn-hover-bg: var(--c-ink-2);
+  --bs-btn-hover-border-color: var(--c-ink-2);
+  --bs-btn-active-bg: var(--c-ink-2);
+  --bs-btn-active-border-color: var(--c-ink-2);
+  --bs-btn-disabled-bg: var(--c-border);
+  --bs-btn-disabled-border-color: var(--c-border);
+  --bs-btn-disabled-color: var(--c-ink-3);
+}
+
+.btn-danger {
+  --bs-btn-bg: var(--c-rose-500);
+  --bs-btn-border-color: var(--c-rose-500);
+  --bs-btn-hover-bg: var(--c-rose-700);
+  --bs-btn-hover-border-color: var(--c-rose-700);
+  --bs-btn-active-bg: var(--c-rose-700);
+  --bs-btn-active-border-color: var(--c-rose-700);
+  --bs-btn-disabled-bg: var(--c-rose-100);
+  --bs-btn-disabled-border-color: var(--c-rose-100);
+  --bs-btn-disabled-color: var(--c-rose-700);
+  --bs-btn-hover-color: #fff;
+  --bs-btn-active-color: #fff;
+}
+
+.btn-outline-primary {
+  --bs-btn-color: var(--c-primary-600);
+  --bs-btn-border-color: var(--c-primary-200);
+  --bs-btn-hover-bg: var(--c-primary-600);
+  --bs-btn-hover-border-color: var(--c-primary-600);
+  --bs-btn-hover-color: #fff;
+  --bs-btn-active-bg: var(--c-primary-700);
+  --bs-btn-active-border-color: var(--c-primary-700);
+  --bs-btn-active-color: #fff;
+  --bs-btn-disabled-color: var(--c-ink-3);
+  --bs-btn-disabled-border-color: var(--c-border);
+}
+
+.btn-outline-secondary {
+  --bs-btn-color: var(--c-ink-2);
+  --bs-btn-border-color: var(--c-border);
+  --bs-btn-hover-bg: var(--c-ink-2);
+  --bs-btn-hover-border-color: var(--c-ink-2);
+  --bs-btn-hover-color: #fff;
+  --bs-btn-active-bg: var(--c-ink);
+  --bs-btn-active-border-color: var(--c-ink);
+  --bs-btn-active-color: #fff;
+  --bs-btn-disabled-color: var(--c-ink-3);
+  --bs-btn-disabled-border-color: var(--c-border);
+}
+
+.btn-outline-danger {
+  --bs-btn-color: var(--c-rose-700);
+  --bs-btn-border-color: var(--c-rose-100);
+  --bs-btn-hover-bg: var(--c-rose-700);
+  --bs-btn-hover-border-color: var(--c-rose-700);
+  --bs-btn-hover-color: #fff;
+  --bs-btn-active-bg: var(--c-rose-700);
+  --bs-btn-active-border-color: var(--c-rose-700);
+  --bs-btn-active-color: #fff;
+}
+
+.btn-light {
+  --bs-btn-bg: var(--c-surface);
+  --bs-btn-border-color: var(--c-border);
+  --bs-btn-hover-bg: var(--c-border-soft);
+  --bs-btn-hover-border-color: var(--c-border);
+  --bs-btn-color: var(--c-ink-2);
+  --bs-btn-hover-color: var(--c-ink);
+}
+
+.btn-link {
+  --bs-btn-color: var(--c-primary-600);
+  --bs-btn-hover-color: var(--c-primary-700);
+  --bs-btn-active-color: var(--c-primary-700);
+}
+
+/* Estado de envio: el boton se deshabilita en main.js, aqui solo el spinner. */
+.btn.is-loading {
+  position: relative;
+  color: transparent !important;
+  pointer-events: none;
+}
+
+.btn.is-loading::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 1rem;
+  height: 1rem;
+  margin: -0.5rem 0 0 -0.5rem;
+  border: 2px solid currentColor;
+  border-top-color: transparent;
+  border-radius: 50%;
+  color: #fff;
+  animation: movies-spin 0.7s linear infinite;
+}
+
+.btn.is-loading.btn-link,
+.btn.is-loading.btn-light,
+.btn.is-loading.btn-outline-primary,
+.btn.is-loading.btn-outline-secondary,
+.btn.is-loading.btn-outline-danger { color: transparent !important; }
+
+.btn.is-loading.btn-light::after,
+.btn.is-loading.btn-outline-primary::after,
+.btn.is-loading.btn-outline-secondary::after,
+.btn.is-loading.btn-outline-danger::after { color: var(--c-ink-2); }
+
+@keyframes movies-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* --- Alertas (mensajes de Django) ------------------------------------------ */
+
+.alert-success {
+  --bs-alert-color: var(--c-success-700);
+  --bs-alert-bg: var(--c-success-100);
+  --bs-alert-border-color: var(--c-success-700);
+}
+
+.alert-danger {
+  --bs-alert-color: var(--c-danger-700);
+  --bs-alert-bg: var(--c-danger-100);
+  --bs-alert-border-color: var(--c-danger-700);
+}
+
+.alert-warning {
+  --bs-alert-color: var(--c-warning-700);
+  --bs-alert-bg: var(--c-warning-100);
+  --bs-alert-border-color: var(--c-warning-700);
+}
+
+.alert-info {
+  --bs-alert-color: var(--c-info-700);
+  --bs-alert-bg: var(--c-info-100);
+  --bs-alert-border-color: var(--c-info-700);
+}
+
+.alert { border-left-width: 4px; }
+
+/* --- Badges ---------------------------------------------------------------- */
+
+.badge.text-bg-primary-soft {
+  background: var(--c-primary-50);
+  color: var(--c-primary-600);
+  --bs-badge-color: var(--c-primary-600);
+  border: 1px solid var(--c-primary-100);
+}
+
+.badge.text-bg-star {
+  background: var(--c-star-100);
+  color: var(--c-star-600);
+  --bs-badge-color: var(--c-star-600);
+}
+
+.badge.text-bg-rose {
+  background: var(--c-rose-100);
+  color: var(--c-rose-700);
+  --bs-badge-color: var(--c-rose-700);
+}
+
+.text-bg-primary {
+  background-color: var(--c-primary-600) !important;
+  color: #fff !important;
+}
+
+.text-bg-rose {
+  background-color: var(--c-rose-500) !important;
+  color: #fff !important;
+}
+
+/* --- Navbar ---------------------------------------------------------------- */
+
+.navbar {
+  background-color: var(--c-primary-900);
+  --bs-navbar-color: rgba(255, 255, 255, .78);
+  --bs-navbar-hover-color: #fff;
+  --bs-navbar-active-color: #fff;
+  --bs-navbar-brand-color: #fff;
+  --bs-navbar-brand-hover-color: #fff;
+}
+
+.navbar .nav-link { color: var(--bs-navbar-color); }
+.navbar .nav-link:hover,
+.navbar .nav-link:focus { color: var(--bs-navbar-hover-color); }
+.navbar .nav-link.active,
+.navbar .nav-link.show { color: var(--bs-navbar-active-color); }
+.navbar-toggler {
+  --bs-navbar-toggler-border-color: rgba(255, 255, 255, .35);
+  --bs-navbar-toggler-icon-bg: none;
+}
+
+.navbar .dropdown-menu { background-color: var(--bs-navbar-dark-dropdown-bg, var(--c-surface)); }
+.navbar .dropdown-item { color: var(--c-ink-2); }
+.navbar .dropdown-item:hover,
+.navbar .dropdown-item:focus { background-color: var(--c-border-soft); color: var(--c-ink); }
+.navbar .dropdown-divider { border-color: var(--c-border-soft); }
+
+/* --- Formularios ----------------------------------------------------------- */
+
+.form-control,
+.form-select {
+  background-color: var(--c-surface);
+  border-color: var(--c-border);
+  color: var(--c-ink);
+}
+
+.form-control::placeholder { color: var(--c-ink-3); }
+
+.form-control:focus,
+.form-select:focus {
+  background-color: var(--c-surface);
+  border-color: var(--c-primary-600);
+  color: var(--c-ink);
+  box-shadow: 0 0 0 .25rem var(--bs-focus-ring-color);
+}
+
+.form-control:disabled,
+.form-select:disabled {
+  background-color: var(--c-border-soft);
+  color: var(--c-ink-3);
+}
+
+.form-label { color: var(--c-ink-2); font-weight: 600; }
+.form-text { color: var(--c-ink-3); }
+
+.input-group-text {
+  background-color: var(--c-surface-alt);
+  border-color: var(--c-border);
+  color: var(--c-ink-2);
+}
+
+/* --- Cards / superficies --------------------------------------------------- */
+
+.card {
+  --bs-card-bg: var(--c-surface);
+  --bs-card-border-color: var(--c-border);
+  --bs-card-cap-bg: var(--c-surface-alt);
+  --bs-card-color: var(--c-ink-2);
+  --bs-card-title-color: var(--c-ink);
+}
+
+/* --- Tablas ---------------------------------------------------------------- */
+
+.table {
+  --bs-table-bg: transparent;
+  --bs-table-color: var(--c-ink-2);
+  --bs-table-border-color: var(--c-border-soft);
+  --bs-table-striped-bg: var(--c-surface-alt);
+  --bs-table-striped-color: var(--c-ink-2);
+  --bs-table-hover-bg: var(--c-border-soft);
+  --bs-table-hover-color: var(--c-ink);
+}
+
+.table > :not(caption) > * > * { color: var(--c-ink-2); }
+.table thead th { color: var(--c-ink); }
+
+/* --- Dropdowns / modales / offcanvas --------------------------------------- */
+
+.dropdown-menu {
+  --bs-dropdown-bg: var(--c-surface);
+  --bs-dropdown-border-color: var(--c-border);
+  --bs-dropdown-link-color: var(--c-ink-2);
+  --bs-dropdown-link-hover-color: var(--c-ink);
+  --bs-dropdown-link-hover-bg: var(--c-border-soft);
+  --bs-dropdown-link-active-color: var(--c-primary-700);
+  --bs-dropdown-link-active-bg: var(--c-primary-50);
+  --bs-dropdown-divider-bg: var(--c-border-soft);
+}
+
+.modal {
+  --bs-modal-bg: var(--c-surface);
+  --bs-modal-border-color: var(--c-border);
+  --bs-modal-header-border-color: var(--c-border-soft);
+  --bs-modal-footer-border-color: var(--c-border-soft);
+}
+
+.offcanvas {
+  --bs-offcanvas-bg: var(--c-surface);
+  --bs-offcanvas-border-color: var(--c-border);
+}
+
+/* --- Paginacion ------------------------------------------------------------ */
+
+.pagination {
+  --bs-pagination-color: var(--c-primary-600);
+  --bs-pagination-bg: var(--c-surface);
+  --bs-pagination-border-color: var(--c-border);
+  --bs-pagination-hover-color: var(--c-primary-700);
+  --bs-pagination-hover-bg: var(--c-border-soft);
+  --bs-pagination-hover-border-color: var(--c-border);
+  --bs-pagination-focus-color: var(--c-primary-700);
+  --bs-pagination-focus-bg: var(--c-border-soft);
+  --bs-pagination-focus-box-shadow: 0 0 0 .25rem var(--bs-focus-ring-color);
+  --bs-pagination-active-bg: var(--c-primary-600);
+  --bs-pagination-active-border-color: var(--c-primary-600);
+  --bs-pagination-disabled-color: var(--c-ink-3);
+  --bs-pagination-disabled-bg: var(--c-surface);
+  --bs-pagination-disabled-border-color: var(--c-border-soft);
+}
+
+.pagination .page-link:focus-visible { box-shadow: 0 0 0 .25rem var(--bs-focus-ring-color); }
+
+/* --- Tabs / listas / accordion --------------------------------------------- */
+
+.nav-tabs {
+  --bs-nav-tabs-border-color: var(--c-border);
+  --bs-nav-tabs-link-active-color: var(--c-primary-700);
+  --bs-nav-tabs-link-active-bg: var(--c-surface);
+  --bs-nav-tabs-link-active-border-color: var(--c-border) var(--c-border) var(--c-surface);
+  --bs-nav-tabs-link-hover-border-color: var(--c-border-soft) var(--c-border-soft) var(--c-border);
+}
+
+.list-group {
+  --bs-list-group-bg: var(--c-surface);
+  --bs-list-group-color: var(--c-ink-2);
+  --bs-list-group-border-color: var(--c-border);
+  --bs-list-group-action-hover-bg: var(--c-border-soft);
+  --bs-list-group-action-hover-color: var(--c-ink);
+}
+
+.accordion {
+  --bs-accordion-bg: var(--c-surface);
+  --bs-accordion-border-color: var(--c-border);
+  --bs-accordion-btn-color: var(--c-ink);
+  --bs-accordion-btn-bg: var(--c-surface);
+  --bs-accordion-active-bg: var(--c-primary-50);
+  --bs-accordion-active-color: var(--c-primary-700);
+}
+
+/* -----------------------------------------------------------------------------
+   4. Accesibilidad
+   -------------------------------------------------------------------------- */
+
+:focus-visible {
+  outline: 2px solid var(--c-focus);
+  outline-offset: 2px;
+}
+
+/* Bootstrap pinta un halo propio en :focus; se unifica con el nuestro. */
+.form-control:focus,
+.form-select:focus,
+.form-check-input:focus {
+  box-shadow: 0 0 0 .25rem var(--bs-focus-ring-color);
+}
+
+/* Ancla de salto: oculta hasta recibir el foco. */
+.skip-link {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1080;
+  display: inline-block;
+  padding: 0.75rem 1.25rem;
+  background-color: var(--c-surface);
+  color: var(--c-primary-700);
+  font-weight: 600;
+  text-decoration: none;
+  border: 2px solid var(--c-primary-600);
+  border-radius: 0 0 0.5rem 0;
+  transform: translateY(-120%);
+  transition: transform 0.15s ease-out;
+}
+
+.skip-link:focus,
+.skip-link:focus-visible {
+  transform: translateY(0);
+  outline-offset: 2px;
+}
+
+.visually-hidden-focusable:not(:focus):not(:focus-within) {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
+/* Area de foco visible tambien cuando la tarjeta recibe foco por teclado. */
+.movie-card:focus-visible,
+.movie-card:focus-within {
+  outline: 2px solid var(--c-focus);
+  outline-offset: 2px;
+}
+
+/* Objetivos tactiles de 44x44 px en movil (WCAG 2.5.5). */
+@media (max-width: 575.98px) {
+  .btn,
+  .btn-sm,
+  .nav-link,
+  .form-control,
+  .form-select {
+    min-height: 44px;
+  }
+
+  .form-control,
+  .form-select {
+    display: flex;
+    align-items: center;
+  }
+
+  /* Excepcion: un `<select multiple size="N">` es una LISTA, no un campo de
+     una linea. Con `display: flex` cada `<option>` pasaria a ser un flex item
+     en fila y la caja se romperia. */
+  select[multiple].form-select {
+    display: block;
+    min-height: 0;
+  }
+
+  .dropdown-toggle,
+  .page-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition: none !important;
+    animation: none !important;
+  }
+
+  /* El hover elevate la tarjeta con transform: hay que anularlo, no basta con
+     quitar la transicion. */
+  .movie-card,
+  .movie-card:hover,
+  .movie-card:focus-within {
+    transform: none !important;
+  }
+
+  .btn.is-loading::after { animation: none !important; }
+}
+
+/* -----------------------------------------------------------------------------
+   5. Utilidades propias
+   -------------------------------------------------------------------------- */
+
+/* Tarjeta de pelicula. El hover y el anillo de foco ya se asumian en las
+   reglas de accesibilidad y de `prefers-reduced-motion` de arriba, pero la
+   transicion que las cancela no estaba declarada en ningun sitio: se
+   define aqui, junto a la portada que reutiliza el mismo bloque. */
+.movie-card {
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.movie-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 0.5rem 1rem rgba(30, 27, 46, 0.12);
+}
+
+/* Portada de la tarjeta: `aspect-ratio` en vez de `height: 300px` fijo, para
+   que la caja no se descentre con la rejilla `row row-cols-*`. */
+.movie-card-cover {
+  display: block;
+  width: 100%;
+  aspect-ratio: 2 / 3;
+  object-fit: cover;
+  background-color: var(--c-border-soft);
+  color: var(--c-ink-3);
+}
+
+.movie-card-cover.no-cover {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 1rem;
+  font-size: 0.875rem;
+}
+
+/* Cifra destacada de las tarjetas de estadisticas. */
+.stat-card {
+  background-color: var(--c-surface);
+  border: 1px solid var(--c-border);
+  border-radius: 0.75rem;
+  padding: 1.25rem;
+  height: 100%;
+  transition: border-color 0.15s ease, transform 0.15s ease;
+}
+
+.stat-card:hover {
+  border-color: var(--c-primary-200);
+  transform: translateY(-2px);
+}
+
+.stat-value {
+  display: block;
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1.1;
+  color: var(--c-primary-600);
+  font-variant-numeric: tabular-nums;
+}
+
+.stat-label {
+  display: block;
+  margin-top: 0.25rem;
+  font-size: 0.8125rem;
+  color: var(--c-ink-3);
+}
+
+/* Modificador de `.stat-value` para las cifras que NO son un numero: el nombre
+   de un genero, un "Sin datos" o un importe estimado con decimales. Los 2rem de
+   `.stat-value` estan calculados para 2-3 digitos y en un `row-cols-lg-4` (una
+   tarjeta de ~230px) desbordan la tarjeta con cualquier texto mas largo. */
+.stat-value-sm {
+  font-size: 1.25rem;
+  line-height: 1.3;
+  word-break: break-word;
+}
+
+/* Valoracion: el dorado pastel es relleno, el texto va en tono oscuro. */
+.rating-value {
+  color: var(--c-star-600);
+  font-weight: 700;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stat-card,
+  .stat-card:hover { transform: none !important; }
+}
