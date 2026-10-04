@@ -8,6 +8,14 @@ El proyecto aplica una arquitectura por capas, optimización de consultas sobre
 el ORM, sistema de autenticación y autorización, y una interfaz responsive
 construida sobre Bootstrap 5.
 
+## Laboratorio Semana 6: Noticias
+
+El módulo independiente `news` añade un portal de noticias con plantillas
+heredadas, tarjetas reutilizables, administración de contenido e imágenes.
+Está disponible en `/noticias/`; la portada original de películas sigue en `/`.
+La guía de implementación, casos de prueba y capturas está en
+[docs/LABORATORIO_NOTICIAS.md](docs/LABORATORIO_NOTICIAS.md).
+
 ---
 
 ## Índice

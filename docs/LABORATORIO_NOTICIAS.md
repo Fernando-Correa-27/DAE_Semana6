@@ -68,4 +68,4 @@ Las capturas se generaron desde la aplicación servida localmente. Las cuentas, 
 
 ## Estado de Git y entrega
 
-Los cambios se registraron en commits descriptivos y pequeños. El remoto `origin` sigue siendo `DAE_Semana_5`; no se ha hecho push ni se ha redirigido a ese repositorio. El destino aún no tiene una URL configurada en este checkout; antes de publicar en `DAE_Semana6`, se debe enlazar el repositorio nuevo con una historia independiente. El árbol de código del laboratorio no reemplaza ni elimina el portal de películas.
+Los cambios se registraron en commits descriptivos y pequeños. La rama local `semana6` parte de una instantánea raíz independiente y conserva después los cuatro commits incrementales del laboratorio. La rama `main` sigue intacta. El remoto `origin` continúa apuntando a `DAE_Semana_5`; no se ha hecho push ni se ha redirigido a ese repositorio. El destino aún no tiene una URL configurada en este checkout; antes de publicar en `DAE_Semana6`, se debe enlazar el repositorio nuevo. El árbol de código del laboratorio no reemplaza ni elimina el portal de películas.
