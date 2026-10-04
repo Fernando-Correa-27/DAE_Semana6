@@ -89,7 +89,7 @@ class Command(BaseCommand):
             )
             article.categories.set(categories[slugify_name(name)] for name in data['categories'])
             if not article.featured_image:
-                image = self.make_cover(index, data['title'])
+                image = self.make_cover(index)
                 article.featured_image.save(f"{data['slug']}.jpg", image, save=True)
         self.stdout.write(self.style.SUCCESS(
             f'Datos listos: {Category.objects.count()} categorías, '
@@ -97,20 +97,16 @@ class Command(BaseCommand):
         ))
 
     @staticmethod
-    def make_cover(index, title):
+    def make_cover(index):
         colors = [('#17324d', '#efb45d'), ('#27485c', '#b6d7c3'), ('#4c3c61', '#e8bb78')]
         background, accent = colors[(index - 1) % len(colors)]
-        image = Image.new('RGB', (1200, 720), background)
+        image = Image.new('RGB', (900, 900), background)
         draw = ImageDraw.Draw(image)
-        draw.rectangle((0, 0, 1200, 18), fill=accent)
-        draw.ellipse((850, -250, 1400, 300), fill=accent)
-        font = ImageFont.load_default(size=58)
-        lines = [title[i:i + 28] for i in range(0, min(len(title), 84), 28)]
-        y = 240
-        for line in lines:
-            draw.text((76, y), line, fill='white', font=font)
-            y += 78
-        draw.text((78, 610), 'DAE  /  NOTICIAS', fill=accent, font=ImageFont.load_default(size=30))
+        draw.rectangle((0, 0, 900, 24), fill=accent)
+        draw.ellipse((430, -80, 1010, 500), fill=accent)
+        draw.rectangle((78, 590, 822, 594), fill=accent)
+        draw.text((78, 630), 'DAE  /  NEWS', fill='white', font=ImageFont.load_default(size=42))
+        draw.text((78, 700), f'EDITION  {index:02d}', fill=accent, font=ImageFont.load_default(size=30))
         stream = BytesIO()
         image.save(stream, format='JPEG', quality=88)
         return ContentFile(stream.getvalue())
