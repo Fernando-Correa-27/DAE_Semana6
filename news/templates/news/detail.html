@@ -1,0 +1,13 @@
+{% extends "news/base.html" %}
+{% block title %}{{ article.title }}{% endblock %}
+{% block content %}
+<article class="detail-article">
+    <p class="eyebrow">{% for category in article.categories.all %}<a href="{% url 'news:category' category.slug %}">{{ category.name }}</a>{% if not forloop.last %} · {% endif %}{% endfor %}</p>
+    <h1>{{ article.title }}</h1>
+    <p class="summary">{{ article.summary }}</p>
+    <p class="meta">Publicado el {{ article.published_at|date:"j \d\e F \d\e Y, H:i" }} por {{ article.author.name }}</p>
+    {% if article.featured_image %}<img class="hero-image" src="{{ article.featured_image.url }}" alt="{{ article.title }}">{% endif %}
+    <div class="article-body">{{ article.body|linebreaks }}</div>
+    <p><a class="read-more" href="{% url 'news:home' %}">← Volver a portada</a></p>
+</article>
+{% endblock %}

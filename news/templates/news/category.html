@@ -1,0 +1,12 @@
+{% extends "news/base.html" %}
+{% block title %}{{ category.name }}{% endblock %}
+{% block content %}
+<section class="intro"><p class="eyebrow">Categoría</p><h1>{{ category.name }}</h1>{% if category.description %}<p>{{ category.description }}</p>{% endif %}</section>
+<div class="article-list">
+    {% for article in articles %}
+        {% include "news/includes/_article_card.html" with article=article %}
+    {% empty %}
+    <p class="empty-state">Esta categoría todavía no tiene noticias publicadas.</p>
+    {% endfor %}
+</div>
+{% endblock %}

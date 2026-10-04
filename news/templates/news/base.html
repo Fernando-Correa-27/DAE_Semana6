@@ -1,0 +1,42 @@
+{% load static %}
+<!doctype html>
+<html lang="es">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}Noticias{% endblock %} | DAE Noticias</title>
+    <link rel="stylesheet" href="{% static 'news/css/news.css' %}">
+</head>
+<body>
+<header class="site-header">
+    <div class="wrap header-inner">
+        <a class="brand" href="{% url 'news:home' %}">DAE <span>Noticias</span></a>
+        <nav aria-label="Categorías">
+            <a href="{% url 'news:home' %}">Portada</a>
+            {% for category in nav_categories %}
+            <a href="{% url 'news:category' category.slug %}">{{ category.name }}</a>
+            {% endfor %}
+            <a href="{% url 'admin:news_article_changelist' %}">Administrar</a>
+        </nav>
+    </div>
+</header>
+<div class="wrap layout">
+    <main id="contenido">
+        {% block content %}{% endblock %}
+    </main>
+    <aside class="sidebar">
+        {% block sidebar %}
+        <h2>Secciones</h2>
+        <ul>
+            {% for category in nav_categories %}
+            <li><a href="{% url 'news:category' category.slug %}">{{ category.name }}</a></li>
+            {% empty %}
+            <li>Las categorías aparecerán aquí.</li>
+            {% endfor %}
+        </ul>
+        {% endblock %}
+    </aside>
+</div>
+<footer class="site-footer"><div class="wrap">Laboratorio DAE · Contenido gestionado en Django Admin</div></footer>
+</body>
+</html>

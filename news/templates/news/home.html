@@ -1,0 +1,12 @@
+{% extends "news/base.html" %}
+{% block title %}Portada{% endblock %}
+{% block content %}
+<section class="intro"><p class="eyebrow">Actualidad</p><h1>Noticias de la comunidad</h1><p>Información, ideas y proyectos publicados por nuestros autores.</p></section>
+<div class="article-list">
+    {% for article in articles %}
+        {% include "news/includes/_article_card.html" with article=article %}
+    {% empty %}
+    <p class="empty-state">Todavía no hay noticias publicadas. Puedes agregarlas desde el administrador.</p>
+    {% endfor %}
+</div>
+{% endblock %}
