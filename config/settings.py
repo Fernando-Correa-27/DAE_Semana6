@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'movies',
+    'news.apps.NewsConfig',
 ]
 
 MIDDLEWARE = [
@@ -184,3 +185,4 @@ LOGGING = {
         },
     },
 }
+
