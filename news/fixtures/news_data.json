@@ -1,0 +1,161 @@
+[
+  {
+    "model": "news.author",
+    "pk": 1,
+    "fields": {
+      "name": "Laura Méndez",
+      "email": "laura@example.com",
+      "biography": "Docente y editora de historias comunitarias."
+    }
+  },
+  {
+    "model": "news.author",
+    "pk": 2,
+    "fields": {
+      "name": "Andrés Rojas",
+      "email": "andres@example.com",
+      "biography": "Interesado en educación y cultura digital."
+    }
+  },
+  {
+    "model": "news.author",
+    "pk": 3,
+    "fields": {
+      "name": "Camila Torres",
+      "email": "camila@example.com",
+      "biography": "Estudiante y colaboradora del laboratorio."
+    }
+  },
+  {
+    "model": "news.category",
+    "pk": 1,
+    "fields": {
+      "name": "Comunidad",
+      "description": "Historias y actividades de nuestra comunidad.",
+      "slug": "comunidad"
+    }
+  },
+  {
+    "model": "news.category",
+    "pk": 2,
+    "fields": {
+      "name": "Educación",
+      "description": "Ideas y experiencias de aprendizaje.",
+      "slug": "educacion"
+    }
+  },
+  {
+    "model": "news.category",
+    "pk": 3,
+    "fields": {
+      "name": "Tecnología",
+      "description": "Proyectos y herramientas digitales.",
+      "slug": "tecnologia"
+    }
+  },
+  {
+    "model": "news.article",
+    "pk": 1,
+    "fields": {
+      "title": "El laboratorio abre sus puertas a nuevas ideas",
+      "slug": "laboratorio-abierto-innovacion",
+      "summary": "Estudiantes y docentes comparten proyectos que conectan aprendizaje, tecnología y comunidad.",
+      "body": "La jornada reunió a estudiantes y docentes para presentar prototipos desarrollados durante el semestre.\n\nCada equipo explicó el problema que buscaba resolver y recibió comentarios de sus compañeros. La actividad continuará con nuevas sesiones abiertas a toda la comunidad.",
+      "featured_image": "news/articles/laboratorio-abierto-innovacion.jpg",
+      "published_at": "2026-10-04T23:42:28.018Z",
+      "author": 1,
+      "categories": [
+        1,
+        3
+      ],
+      "status": "published"
+    }
+  },
+  {
+    "model": "news.article",
+    "pk": 2,
+    "fields": {
+      "title": "Aprender en equipo cambia la conversación en el aula",
+      "slug": "aprendizaje-colaborativo-en-aula",
+      "summary": "Una experiencia de trabajo colaborativo demuestra el valor de escuchar, debatir y construir en grupo.",
+      "body": "Los grupos organizaron sus ideas, repartieron tareas y compararon distintas formas de resolver un mismo reto.\n\nEl ejercicio destacó que explicar un concepto a otra persona también ayuda a comprenderlo mejor.",
+      "featured_image": "news/articles/aprendizaje-colaborativo-en-aula.jpg",
+      "published_at": "2026-10-04T23:42:28.105Z",
+      "author": 2,
+      "categories": [
+        2
+      ],
+      "status": "published"
+    }
+  },
+  {
+    "model": "news.article",
+    "pk": 3,
+    "fields": {
+      "title": "Herramientas digitales al servicio de proyectos locales",
+      "slug": "herramientas-digitales-con-proposito",
+      "summary": "El curso presentó soluciones pequeñas y útiles para mejorar la difusión de iniciativas del barrio.",
+      "body": "Los equipos diseñaron prototipos web y discutieron cómo hacerlos accesibles desde distintos dispositivos.\n\nLa selección de herramientas partió de las necesidades de las personas y no de la tecnología disponible.",
+      "featured_image": "news/articles/herramientas-digitales-con-proposito.jpg",
+      "published_at": "2026-10-04T23:42:28.139Z",
+      "author": 3,
+      "categories": [
+        1,
+        3
+      ],
+      "status": "published"
+    }
+  },
+  {
+    "model": "news.article",
+    "pk": 4,
+    "fields": {
+      "title": "El semillero comparte sus primeros resultados",
+      "slug": "semillero-presenta-resultados",
+      "summary": "La muestra recoge avances de investigación y abre espacio para nuevas preguntas.",
+      "body": "Durante la presentación, el semillero describió su proceso de búsqueda, análisis y validación.\n\nLos asistentes dejaron preguntas que orientarán la siguiente fase del trabajo.",
+      "featured_image": "news/articles/semillero-presenta-resultados.jpg",
+      "published_at": "2026-10-04T23:42:28.177Z",
+      "author": 1,
+      "categories": [
+        2
+      ],
+      "status": "published"
+    }
+  },
+  {
+    "model": "news.article",
+    "pk": 5,
+    "fields": {
+      "title": "Cinco hábitos para cuidar la información personal",
+      "slug": "seguridad-digital-cotidiana",
+      "summary": "Una guía práctica resume medidas sencillas para navegar y compartir información con mayor cuidado.",
+      "body": "Usar contraseñas distintas, activar la verificación en dos pasos y revisar los permisos de las aplicaciones son hábitos fáciles de incorporar.\n\nLa seguridad mejora cuando las decisiones se convierten en parte de la rutina.",
+      "featured_image": "news/articles/seguridad-digital-cotidiana.jpg",
+      "published_at": "2026-10-04T23:42:28.211Z",
+      "author": 2,
+      "categories": [
+        3
+      ],
+      "status": "published"
+    }
+  },
+  {
+    "model": "news.article",
+    "pk": 6,
+    "fields": {
+      "title": "Prueba del escapado automático de HTML",
+      "slug": "prueba-escapado-html",
+      "summary": "Esta noticia permite comprobar cómo Django muestra texto HTML introducido en el cuerpo.",
+      "body": "Prueba de seguridad: <strong>este texto se guarda como contenido y se muestra escapado</strong>.\n\nDjango autoescapa las variables de plantilla, por lo que las etiquetas aparecen como texto y no se ejecutan como marcado HTML.",
+      "featured_image": "news/articles/prueba-escapado-html.jpg",
+      "published_at": "2026-10-04T23:42:28.245Z",
+      "author": 3,
+      "categories": [
+        2,
+        3
+      ],
+      "status": "published"
+    }
+  }
+]

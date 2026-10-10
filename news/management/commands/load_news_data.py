@@ -84,7 +84,7 @@ class Command(BaseCommand):
                 slug=data['slug'],
                 defaults={
                     'title': data['title'], 'summary': data['summary'], 'body': data['body'],
-                    'author': authors[data['author']], 'is_published': True,
+                    'author': authors[data['author']], 'status': Article.Status.PUBLISHED,
                 },
             )
             article.categories.set(categories[slugify_name(name)] for name in data['categories'])
