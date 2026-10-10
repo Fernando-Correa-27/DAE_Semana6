@@ -1,15 +1,10 @@
-<article class="article-card">
-    {% if article.featured_image %}
-    <a class="card-image" href="{% url 'news:detail' article.slug %}"><img src="{{ article.featured_image.url }}" alt="{{ article.title }}"></a>
-    {% endif %}
+<article class="article-card{% if feature %} article-card-feature{% endif %}">
+    {% if article.featured_image %}<a class="card-image" href="{% url 'news:detail' article.slug %}"><img src="{{ article.featured_image.url }}" alt="{{ article.title }}" loading="{% if feature %}eager{% else %}lazy{% endif %}"></a>{% endif %}
     <div class="card-copy">
-        <p class="eyebrow">
-            {% for category in article.categories.all %}<a href="{% url 'news:category' category.slug %}">{{ category.name }}</a>{% if not forloop.last %} · {% endif %}{% endfor %}
-        </p>
+        <p class="eyebrow">{% for category in article.categories.all %}<a href="{% url 'news:category' category.slug %}">{{ category.name }}</a>{% if not forloop.last %}<span aria-hidden="true"> / </span>{% endif %}{% endfor %}</p>
         <h2><a href="{% url 'news:detail' article.slug %}">{{ article.title }}</a></h2>
-        <p>{{ article.summary|truncatewords:28 }}</p>
-        <p class="meta">{{ article.published_at|date:"j \d\e F \d\e Y" }} · {{ article.author.name }}</p>
-        <a class="read-more" href="{% url 'news:detail' article.slug %}">Leer noticia →</a>
+        <p class="card-summary">{{ article.summary|truncatewords:28 }}</p>
+        <p class="meta"><time datetime="{{ article.published_at|date:'c' }}">{{ article.published_at|date:"j \d\e F \d\e Y" }}</time><span aria-hidden="true"> · </span>{{ article.author.name }}</p>
+        <a class="read-more" href="{% url 'news:detail' article.slug %}">Leer noticia <span aria-hidden="true">→</span></a>
     </div>
 </article>
-

@@ -1,12 +1,14 @@
 {% extends "news/base.html" %}
 {% block title %}Portada{% endblock %}
 {% block content %}
-<section class="intro"><p class="eyebrow">Actualidad</p><h1>Noticias de la comunidad</h1><p>Información, ideas y proyectos publicados por nuestros autores.</p></section>
+<section class="intro"><p class="eyebrow">Actualidad <span class="eyebrow-rule"></span> DAE · Edición digital</p><h1>Historias que mueven la comunidad.</h1><p>Ideas, proyectos y conversaciones que merecen un lugar.</p></section>
+<div class="section-heading"><h2>Lo más reciente</h2><span>Noticias publicadas</span></div>
 <div class="article-list">
     {% for article in articles %}
-        {% include "news/includes/_article_card.html" with article=article %}
+        {% include "news/includes/_article_card.html" with article=article feature=forloop.first %}
     {% empty %}
     <p class="empty-state">Todavía no hay noticias publicadas. Puedes agregarlas desde el administrador.</p>
     {% endfor %}
 </div>
+{% include "news/includes/_pagination.html" with page_obj=page_obj %}
 {% endblock %}

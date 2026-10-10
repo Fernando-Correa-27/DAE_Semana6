@@ -1,0 +1,7 @@
+{% extends "news/base.html" %}
+{% block title %}Gestión editorial{% endblock %}
+{% block content %}
+<section class="intro"><p class="eyebrow">Espacio de trabajo</p><h1>Gestión editorial</h1><p>Consulta tus borradores y el estado de revisión.</p></section>
+<div class="section-heading"><h2>{% if perms.news.review_article %}Noticias del portal{% else %}Mis noticias{% endif %}</h2>{% if perms.news.add_article %}<a class="button button-small" href="{% url 'news:article_create' %}">Crear noticia</a>{% endif %}</div>
+<div class="editorial-list">{% for article in articles %}<article class="editorial-row"><div><p class="status-badge status-{{ article.status }}">{{ article.get_status_display }}</p><h2><a href="{% url 'news:detail' article.slug %}">{{ article.title }}</a></h2><p class="meta">{{ article.author.name }} · {{ article.published_at|date:"j M Y" }}</p></div><div class="row-actions"><a href="{% url 'news:article_edit' article.slug %}">Editar</a>{% if perms.news.delete_article %}<a href="{% url 'news:article_delete' article.slug %}">Eliminar</a>{% endif %}</div></article>{% empty %}<p class="empty-state">Todavía no tienes noticias. {% if perms.news.add_article %}<a href="{% url 'news:article_create' %}">Crear la primera noticia</a>{% endif %}</p>{% endfor %}</div>
+{% endblock %}

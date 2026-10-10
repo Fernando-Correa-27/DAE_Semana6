@@ -2,12 +2,22 @@
 {% block title %}{{ article.title }}{% endblock %}
 {% block content %}
 <article class="detail-article">
+    {% if article.status != 'published' %}<p class="status-badge">{{ article.get_status_display }}</p>{% endif %}
     <p class="eyebrow">{% for category in article.categories.all %}<a href="{% url 'news:category' category.slug %}">{{ category.name }}</a>{% if not forloop.last %} · {% endif %}{% endfor %}</p>
     <h1>{{ article.title }}</h1>
     <p class="summary">{{ article.summary }}</p>
-    <p class="meta">Publicado el {{ article.published_at|date:"j \d\e F \d\e Y, H:i" }} por {{ article.author.name }}</p>
+    <p class="meta">{{ article.published_at|date:"j \d\e F \d\e Y, H:i" }} · {{ article.author.name }}</p>
     {% if article.featured_image %}<img class="hero-image" src="{{ article.featured_image.url }}" alt="{{ article.title }}">{% endif %}
     <div class="article-body">{{ article.body|linebreaks }}</div>
+    {% if article.tags.exists %}<div class="tag-list" aria-label="Etiquetas">{% for tag in article.tags.all %}<a class="tag" href="{% url 'news:tag' tag.slug %}">{{ tag.name }}</a>{% endfor %}</div>{% endif %}
+    {% if user.is_authenticated %}
+    <section class="editor-actions" aria-label="Acciones editoriales">
+        {% if perms.news.change_article and article.author.user_id == user.id or perms.news.change_article and perms.news.review_article %}<a class="button button-secondary" href="{% url 'news:article_edit' article.slug %}">Editar noticia</a>{% endif %}
+        {% if perms.news.delete_article and article.author.user_id == user.id or perms.news.delete_article and perms.news.review_article %}<a class="button button-danger" href="{% url 'news:article_delete' article.slug %}">Eliminar noticia</a>{% endif %}
+        {% if article.status == 'draft' and article.author.user_id == user.id and perms.news.change_article %}<form method="post" action="{% url 'news:article_transition' article.slug %}">{% csrf_token %}<button class="button" name="action" value="submit">Enviar a revisión</button></form>{% endif %}
+        {% if article.status == 'pending' and perms.news.publish_article %}<form method="post" action="{% url 'news:article_transition' article.slug %}">{% csrf_token %}<button class="button" name="action" value="publish">Publicar noticia</button><button class="button button-secondary" name="action" value="return">Devolver a borrador</button></form>{% endif %}
+    </section>
+    {% endif %}
     <p><a class="read-more" href="{% url 'news:home' %}">← Volver a portada</a></p>
 </article>
 {% endblock %}

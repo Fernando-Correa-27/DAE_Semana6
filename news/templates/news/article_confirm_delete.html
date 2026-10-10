@@ -1,0 +1,7 @@
+{% extends "news/base.html" %}
+{% block title %}Eliminar noticia{% endblock %}
+{% block content %}
+<section class="form-panel"><p class="eyebrow">Acción irreversible</p><h1>Eliminar noticia</h1><p>¿Confirmas que deseas eliminar “{{ article.title }}”? Esta solicitud solo se ejecuta al confirmar el formulario.</p>
+    <form method="post" class="form-actions">{% csrf_token %}<button class="button button-danger" type="submit">Sí, eliminar noticia</button><a class="button button-secondary" href="{% url 'news:detail' article.slug %}">Cancelar</a></form>
+</section>
+{% endblock %}

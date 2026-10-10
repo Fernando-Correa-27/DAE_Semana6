@@ -4,39 +4,71 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Noticias, ideas y proyectos de nuestra comunidad.">
     <title>{% block title %}Noticias{% endblock %} | DAE Noticias</title>
+    <script>
+        (() => {
+            let theme = 'light';
+            try {
+                const savedTheme = localStorage.getItem('dae-theme');
+                theme = savedTheme === 'light' || savedTheme === 'dark'
+                    ? savedTheme
+                    : (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+            } catch (_) {
+                theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+            }
+            document.documentElement.dataset.theme = theme;
+        })();
+    </script>
+    <link rel="icon" type="image/svg+xml" href="{% static 'news/img/mark.svg' %}">
     <link rel="stylesheet" href="{% static 'news/css/news.css' %}">
+    {% block extra_head %}{% endblock %}
 </head>
 <body>
+<a class="skip-link" href="#contenido">Saltar al contenido</a>
 <header class="site-header">
     <div class="wrap header-inner">
-        <a class="brand" href="{% url 'news:home' %}">DAE <span>Noticias</span></a>
-        <nav aria-label="Categorías">
-            <a href="{% url 'news:home' %}">Portada</a>
-            {% for category in nav_categories %}
-            <a href="{% url 'news:category' category.slug %}">{{ category.name }}</a>
-            {% endfor %}
-            <a href="{% url 'admin:news_article_changelist' %}">Administrar</a>
+        <a class="brand" href="{% url 'news:home' %}" aria-label="DAE Noticias, portada"><span class="brand-mark">D</span><span>DAE <b>Noticias</b></span></a>
+        <nav class="primary-nav" aria-label="Navegación principal">
+            <a href="{% url 'news:home' %}"{% if request.resolver_match.url_name == 'home' %} aria-current="page"{% endif %}>Portada</a>
+            {% for category in nav_categories %}<a href="{% url 'news:category' category.slug %}"{% if request.resolver_match.url_name == 'category' and request.resolver_match.kwargs.slug == category.slug %} aria-current="page"{% endif %}>{{ category.name }}</a>{% endfor %}
+            {% if user.is_authenticated %}
+                {% if perms.news.view_unpublished_article or perms.news.review_article %}<a href="{% url 'news:my_articles' %}">Gestión editorial</a>{% endif %}
+                {% if perms.news.add_article %}<a href="{% url 'news:article_create' %}">Nueva noticia</a>{% endif %}
+                <a href="{% url 'news:profile' %}">Mi perfil</a>
+            {% endif %}
         </nav>
+        <div class="account-nav">
+            <button class="theme-toggle" type="button" data-theme-toggle aria-label="Cambiar tema claro u oscuro" title="Cambiar tema">
+                <svg class="theme-icon-dark" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.2 15.3A8.5 8.5 0 0 1 8.7 3.8 8.6 8.6 0 1 0 20.2 15.3Z"></path></svg>
+                <svg class="theme-icon-light" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"></path></svg>
+                <span class="theme-label">Tema</span>
+            </button>
+            {% if user.is_authenticated %}
+                <span class="account-name">{{ user.get_username }}</span>
+                <form method="post" action="{% url 'news:logout' %}">{% csrf_token %}<button class="link-button" type="submit">Salir</button></form>
+            {% else %}
+                <a href="{% url 'news:login' %}">Ingresar</a>
+                <a class="button button-small" href="{% url 'news:register' %}">Crear cuenta</a>
+            {% endif %}
+            {% if user.is_staff %}<a class="admin-link" href="{% url 'admin:index' %}">Admin</a>{% endif %}
+        </div>
     </div>
 </header>
 <div class="wrap layout">
-    <main id="contenido">
+    <main id="contenido" class="main-content">
+        {% if messages %}<div class="messages" aria-live="polite">{% for message in messages %}<p class="message message-{{ message.tags }}">{{ message }}</p>{% endfor %}</div>{% endif %}
         {% block content %}{% endblock %}
     </main>
     <aside class="sidebar">
         {% block sidebar %}
-        <h2>Secciones</h2>
-        <ul>
-            {% for category in nav_categories %}
-            <li><a href="{% url 'news:category' category.slug %}">{{ category.name }}</a></li>
-            {% empty %}
-            <li>Las categorías aparecerán aquí.</li>
-            {% endfor %}
-        </ul>
+        <div class="sidebar-panel"><p class="eyebrow">Explorar</p><h2>Secciones</h2>
+            <ul>{% for category in nav_categories %}<li><a href="{% url 'news:category' category.slug %}">{{ category.name }}<span aria-hidden="true">→</span></a></li>{% empty %}<li>Las categorías aparecerán aquí.</li>{% endfor %}</ul>
+        </div>
         {% endblock %}
     </aside>
 </div>
-<footer class="site-footer"><div class="wrap">Laboratorio DAE · Contenido gestionado en Django Admin</div></footer>
+<footer class="site-footer"><div class="wrap footer-inner"><a class="brand" href="{% url 'news:home' %}">DAE <b>Noticias</b></a><p>Información de la comunidad, administrada con criterio editorial.</p></div></footer>
+<script src="{% static 'news/js/theme.js' %}" defer></script>
 </body>
 </html>

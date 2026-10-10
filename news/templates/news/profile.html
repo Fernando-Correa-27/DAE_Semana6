@@ -1,0 +1,7 @@
+{% extends "news/base.html" %}
+{% block title %}Mi perfil{% endblock %}
+{% block content %}
+<section class="form-panel"><p class="eyebrow">Cuenta personal</p><h1>Mi perfil</h1><p>Sesión iniciada como <strong>{{ user.get_username }}</strong>. Los grupos editoriales se asignan desde administración.</p>
+    <form method="post" class="portal-form">{% csrf_token %}{% for field in form %}<div class="form-field"><label for="{{ field.id_for_label }}">{{ field.label }}</label>{{ field }}{{ field.errors }}</div>{% endfor %}<button class="button" type="submit">Guardar perfil</button></form>
+</section>
+{% endblock %}

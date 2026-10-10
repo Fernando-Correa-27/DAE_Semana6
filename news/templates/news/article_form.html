@@ -1,0 +1,10 @@
+{% extends "news/base.html" %}
+{% block title %}{{ heading }}{% endblock %}
+{% block content %}
+<section class="form-panel"><p class="eyebrow">Gestión editorial</p><h1>{{ heading }}</h1><p>Los cambios se validan antes de guardarse. Una noticia nueva se crea en estado borrador.</p>
+    <form method="post" enctype="multipart/form-data" class="portal-form">{% csrf_token %}{{ form.non_field_errors }}
+        {% for field in form %}<div class="form-field{% if field.name == 'categories' or field.name == 'tags' %} form-field-options{% endif %}"><label for="{{ field.id_for_label }}">{{ field.label }}</label>{{ field }}{% if field.help_text %}<small>{{ field.help_text }}</small>{% endif %}{% if field.errors %}<div class="field-errors" role="alert">{{ field.errors }}</div>{% endif %}</div>{% endfor %}
+        <div class="form-actions"><button class="button" type="submit">Guardar borrador</button><a class="button button-secondary" href="{% if article %}{% url 'news:detail' article.slug %}{% else %}{% url 'news:my_articles' %}{% endif %}">Cancelar</a></div>
+    </form>
+</section>
+{% endblock %}

@@ -1,0 +1,18 @@
+{% extends "news/base.html" %}
+{% block title %}Etiqueta {{ tag.name }}{% endblock %}
+{% block content %}
+<section class="intro">
+    <p class="eyebrow"><a href="{% url 'news:home' %}">Actualidad</a><span class="eyebrow-rule"></span>Etiqueta</p>
+    <h1>{{ tag.name }}</h1>
+    <p>Noticias publicadas relacionadas con este tema.</p>
+</section>
+<div class="section-heading"><h2>Noticias con esta etiqueta</h2><span>Contenido publicado</span></div>
+<div class="article-list">
+    {% for article in articles %}
+        {% include "news/includes/_article_card.html" with article=article feature=forloop.first %}
+    {% empty %}
+        <p class="empty-state">Todavía no hay noticias publicadas con esta etiqueta.</p>
+    {% endfor %}
+</div>
+{% include "news/includes/_pagination.html" with page_obj=page_obj %}
+{% endblock %}

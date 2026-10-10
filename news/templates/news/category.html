@@ -4,9 +4,10 @@
 <section class="intro"><p class="eyebrow">Categoría</p><h1>{{ category.name }}</h1>{% if category.description %}<p>{{ category.description }}</p>{% endif %}</section>
 <div class="article-list">
     {% for article in articles %}
-        {% include "news/includes/_article_card.html" with article=article %}
+        {% include "news/includes/_article_card.html" with article=article feature=forloop.first %}
     {% empty %}
     <p class="empty-state">Esta categoría todavía no tiene noticias publicadas.</p>
     {% endfor %}
 </div>
+{% include "news/includes/_pagination.html" with page_obj=page_obj %}
 {% endblock %}

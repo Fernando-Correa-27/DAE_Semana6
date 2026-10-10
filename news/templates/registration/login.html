@@ -1,0 +1,10 @@
+{% extends "news/base.html" %}
+{% block title %}Ingresar{% endblock %}
+{% block content %}
+<section class="form-panel auth-panel"><p class="eyebrow">Tu cuenta</p><h1>Ingresar</h1><p>Accede a tu perfil y, si tienes permisos, a tus herramientas editoriales.</p>
+    <form method="post" class="portal-form">{% csrf_token %}{{ form.non_field_errors }}
+        {% for field in form %}<div class="form-field"><label for="{{ field.id_for_label }}">{{ field.label }}</label>{{ field }}{% if field.help_text %}<small>{{ field.help_text }}</small>{% endif %}{{ field.errors }}</div>{% endfor %}
+        <input type="hidden" name="next" value="{{ next }}"><button class="button" type="submit">Ingresar</button>
+    </form><p class="form-footnote">¿Aún no tienes cuenta? <a href="{% url 'news:register' %}">Crear una cuenta</a></p>
+</section>
+{% endblock %}
