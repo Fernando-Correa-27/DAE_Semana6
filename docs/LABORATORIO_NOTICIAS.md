@@ -1,71 +1,92 @@
-# Laboratorio: Plantillas y Administrador de Django
+# DAE Laboratorio 6 — Portal de noticias
 
-## Diagnóstico de partida
+## Estado inicial y alcance
 
-El repositorio recibido era el portal de películas del laboratorio anterior (`movies`), en la rama `main`, con remoto `origin` apuntando a `DAE_Semana_5`. Ya incluía Django Admin personalizado, herencia de plantillas, includes, estáticos, Pillow y manejo de multimedia. La ruta `/` estaba ocupada por el catálogo de películas. Se conservó esa aplicación y se añadió `news` como módulo independiente, accesible desde `/noticias/`.
+La carpeta de trabajo es la raíz independiente `DAE_Laboratorio_6`; no hay repositorio Git inicializado en esta ubicación. El proyecto contiene `manage.py`, `config/`, la aplicación `news/`, una base SQLite propia, migraciones, estilos, seis imágenes y documentación del laboratorio anterior. Se revisaron antes de modificar `settings.py`, las rutas, modelos, vistas, Admin, plantillas, dependencias, migración inicial y registros existentes. No se encontró `.opencode/` ni una bóveda/carpeta de agentes dentro del proyecto.
 
-La configuración inicial ya tenía `templates/`, `STATIC_URL`, `MEDIA_ROOT` y el servicio de medios condicional a `DEBUG` en `config/urls.py`; se reutilizaron sin duplicarlos. La base de datos local ya tenía un superusuario. La copia histórica `config/movies/`, los archivos de Obsidian y los agentes de `.opencode/` se conservaron.
+La configuración declara Django 5.2.x, SQLite, Admin, autenticación nativa, Pillow, estáticos y multimedia en desarrollo. El entorno disponible durante esta revisión ejecuta Python 3.14.4 y Django 6.1.1, por lo que las verificaciones se ejecutaron allí; no se instaló ni validó la versión declarada en un entorno virtual separado. La base activa es `db.sqlite3`; conserva seis noticias, tres categorías y tres autores. Las páginas públicas, fragmento de tarjeta y Admin básico ya existían, al igual que las mejoras descritas abajo. Esta revisión no modificó datos de la base ni generó migraciones nuevas.
 
-## Puesta en marcha
+## Implementación
+
+### Autenticación y permisos
+
+- Registro mediante `UserCreationForm`, inicio mediante `AuthenticationForm` y cierre de sesión mediante `LogoutView` con POST y CSRF.
+- El registro crea usuario lector, `UserProfile` y `Author` asociado. No asigna permisos editoriales.
+- `setup_editorial_roles` crea/actualiza los grupos `Usuarios registrados`, `Redactores` y `Editores` con permisos de Django. Asigna cuentas a los grupos desde Admin. Los grupos lectores no tienen permisos editoriales.
+- Las vistas comprueban permisos y propiedad en servidor. Un redactor solo ve y gestiona noticias asociadas a su cuenta. El editor puede revisar y publicar. Los visitantes solo consultan registros publicados.
+- La revisión/editorial no sustituye el permiso `change_article`: las vistas requieren ambos para cambiar contenido. Publicar requiere además `publish_article`. Categorías y etiquetas se pueden explorar públicamente mediante `/categoria/<slug>/` y `/etiqueta/<slug>/`.
+- `/editorial/mis-noticias/`, crear, editar, confirmación/eliminación, envío a revisión, edición de perfil y CRUD público de noticias requieren sesión y permiso. El borrado solo se ejecuta con POST.
+
+### Flujo editorial
+
+`Article.status` admite `draft`, `pending` y `published`. Los redactores crean borradores y pueden enviarlos a revisión; editar un pendiente lo devuelve a borrador. Un usuario con `publish_article` publica únicamente pendientes. Inicio, categoría y acceso anónimo al detalle filtran por estado publicado. El autor y editor pueden consultar su contenido de trabajo según permisos.
+
+La migración `0002` añadió `status`, convirtió `is_published=True` en `published` y los valores falsos en `draft`, y luego retiró el campo anterior. Los seis artículos existentes quedaron publicados. No se vació ni recreó la base. La propiedad de lectura `is_published` se conserva por compatibilidad de código, pero las escrituras deben usar `status`.
+
+### Modelos y reglas de relaciones
+
+| Relación | Acceso inverso | `on_delete` | Efecto probado |
+|---|---|---|---|
+| `Article.author → Author` (`ForeignKey`) | `author.articles` | `PROTECT` | No se elimina un autor que tiene noticias. |
+| `Article.categories → Category` (`ManyToManyField`) | `category.articles` | Tabla de asociación implícita | Al eliminar una categoría se eliminan sus enlaces, no las noticias. |
+| `Article.tags → Tag` (`ManyToManyField` con `through=ArticleTag`) | `tag.articles` | Ver modelo intermedio | La pareja noticia/etiqueta es única; se guarda fecha y posición. |
+| `ArticleTag.article → Article` | `article.tag_links` | `CASCADE` | Eliminar una noticia elimina sus asociaciones de etiqueta. |
+| `ArticleTag.tag → Tag` | `tag.article_links` | `PROTECT` | No se elimina una etiqueta vinculada; primero hay que desvincularla. |
+| `Author.user → User` (`OneToOneField`) | `user.editorial_author` | `SET_NULL` | Eliminar la cuenta conserva las noticias y desasocia la identidad. |
+| `UserProfile.user → User` (`OneToOneField`) | `user.profile` | `CASCADE` | El perfil personal se elimina con su cuenta. |
+
+Los casos de `on_delete` se prueban con datos aislados en la base temporal de Django TestCase; no se borran datos locales para demostrarlos.
+
+### Administración
+
+`ArticleAdmin` presenta estado, fecha, autor y categorías; incluye filtros, búsqueda, jerarquía de fechas, orden, `select_related`, autocompletado de autor y un inline tabular para `ArticleTag`. Los redactores que ingresan a Admin deben ser `is_staff`, solo consultan su propio ámbito y no pueden modificar autor/estado arbitrariamente. `AuthorAdmin`, `CategoryAdmin`, `TagAdmin` y `UserProfileAdmin` tienen búsqueda/listados adecuados. Usuarios, grupos y permisos usan el Admin nativo.
+
+### Plantillas y presentación
+
+- `news/base.html` centraliza HTML, navegación, mensajes, cuenta, estáticos y sidebar; páginas derivadas usan `{% extends %}` y bloques.
+- `news/includes/_article_card.html` se reutiliza en portada y categoría. `_pagination.html` centraliza paginación.
+- Las vistas preparan las consultas; las plantillas presentan modelos con `{% for %}`, `{% empty %}`, `{% if %}`, `{% url %}`, `date`, `truncatewords` y `default` donde aplica.
+- `news.css` define una interfaz editorial responsive y un sistema completo de tema claro y oscuro mediante variables semánticas. Lavanda y salvia aportan acentos; grafito, gris cálido y superficies separadas construyen el tema oscuro. El tema sigue la preferencia del sistema al inicio, cambia con el control SVG accesible y se recuerda en `localStorage` sin parpadeo al navegar.
+- Formularios, navegación, mensajes, tarjetas, etiquetas, estados editoriales y paginación consumen los tokens de ambos temas. Los breakpoints móviles convierten las columnas en una sola, mantienen los controles táctiles y reordenan la barra lateral sin desbordar el documento. El estilo usa foco visible, contraste por estado y `prefers-reduced-motion`.
+- El proyecto no trae Bootstrap ni una biblioteca de iconos. Se conserva el CSS grid/flex existente para evitar descargar un framework redundante; el único icono nuevo es SVG inline y no requiere dependencia.
+- Imágenes usan `ImageField` y `article.featured_image.url`; CSS usa `{% load static %}` y `{% static %}`. El servidor de medios solo se configura con `DEBUG=True`.
+- Las variables de plantilla mantienen autoescape. El cuerpo con `<strong>…</strong>` se presenta como texto escapado; no se aplica `safe` al contenido editorial.
+
+## Datos y ejecución local
 
 ```powershell
-# Desde la raíz del repositorio
+py -m venv .venv
+.\.venv\Scripts\Activate.ps1
 python -m pip install -r requirements.txt
 python manage.py migrate
-python manage.py createsuperuser  # solo si aún no existe uno
+python manage.py setup_editorial_roles
 python manage.py load_news_data
+python manage.py createsuperuser
 python manage.py runserver
 ```
 
-- Portal de noticias: <http://127.0.0.1:8000/noticias/>
-- Administración: <http://127.0.0.1:8000/admin/>
-- Los datos de ejemplo crean tres categorías, tres autores y seis noticias, con portadas en `media/news/articles/`.
-- El comando `load_news_data` puede repetirse sin duplicar las noticias de demostración.
-- Pillow ya estaba declarado en `requirements.txt` e instalado en el entorno usado para verificar.
+Admin está en `/admin/`; portada en `/`. `load_news_data` es repetible e instala seis noticias, tres categorías, tres autores y portadas. Alternativamente, `python manage.py loaddata news_data` importa el fixture, que usa los estados nuevos. Crea una cuenta administrativa con `createsuperuser`; asigna grupos y, si se requiere acceso al Admin, marca `is_staff` solo desde esa cuenta. No guardes claves reales en el repositorio.
 
-## Organización y funcionamiento
+Variables existentes: `DJANGO_SECRET_KEY`, `DJANGO_DEBUG`, `DJANGO_ALLOWED_HOSTS`, `DJANGO_TIME_ZONE`; `DJANGO_DB_NAME` permite seleccionar otro archivo SQLite. En desarrollo, si no se define `DJANGO_SECRET_KEY`, se genera una clave temporal y `America/Bogota` es la zona horaria predeterminada. Con `DJANGO_DEBUG=False` la aplicación exige una clave secreta propia y marca las cookies de sesión y CSRF como seguras. En producción configura también hosts concretos, HTTPS y servicio de media/estáticos apropiado.
 
-| Elemento | Responsabilidad |
-|---|---|
-| `news/models.py` | `Article`, `Category`, `Author`, sus campos y relaciones |
-| `news/admin.py` | Búsqueda, filtros, columnas y edición de relaciones desde Admin |
-| `news/views.py` | Selección de noticias publicadas y preparación de contexto |
-| `news/urls.py` | Rutas nombradas `news:home`, `news:detail`, `news:category` |
-| `news/templates/news/base.html` | Estructura compartida, navegación y bloques `title`, `content`, `sidebar` |
-| `news/templates/news/includes/_article_card.html` | Fragmento compartido por la portada y el listado de categoría |
-| `news/static/news/css/news.css` | Estilos del portal de noticias |
-| `news/management/commands/load_news_data.py` | Contenido e imágenes reproducibles para el laboratorio |
+## Casos verificados
 
-Las plantillas de portada, detalle y categoría heredan con `{% extends %}`. Las tarjetas muestran variables del modelo, usan `{% for %}`, filtros `date` y `truncatewords`, y enlaces con `{% url %}`. Portada y categoría usan `{% empty %}`. El contenido se publica al cambiarlo en Admin, sin editar las plantillas.
-
-Las imágenes se guardan bajo `MEDIA_ROOT` y se enlazan mediante `article.featured_image.url`. `config/urls.py` sirve multimedia solo con `DEBUG=True`. El CSS se referencia con `{% load static %}` y `{% static %}`.
-
-## Casos de prueba y observaciones
-
-1. Ejecutar `python manage.py load_news_data` y comprobar en `/admin/news/` que hay seis noticias, tres categorías y tres autores.
-2. Abrir `/noticias/`: aparecen las seis tarjetas, con título, resumen recortado, fecha, autor, categorías e imagen.
-3. Abrir una categoría desde la navegación; por ejemplo `/noticias/categoria/tecnologia/`. La misma tarjeta se incluye desde esa plantilla.
-4. Abrir una noticia y comprobar imagen destacada, resumen, cuerpo, fecha, autor y categorías.
-5. Para comprobar estados vacíos sin cambiar las plantillas, despublicar temporalmente todas las noticias en Admin. Portada mostrará el texto del bloque `{% empty %}`; una categoría sin noticias publicadas mostrará su propio estado vacío. Después se pueden volver a publicar.
-6. Editar una noticia desde Admin y volver al portal: la modificación aparece desde el modelo, sin tocar HTML.
-7. En la noticia **Prueba del escapado automático de HTML**, el cuerpo contiene literalmente `<strong>este texto se guarda como contenido y se muestra escapado</strong>`. La página muestra esos caracteres como texto ordinario; el navegador no convierte el fragmento en negrita. Django escapa automáticamente las variables de plantilla para reducir el riesgo de inyección de HTML. No se usa `safe` ni se desactiva el escape.
-
-Pruebas automatizadas del nuevo módulo:
+Comandos ejecutados en el proyecto:
 
 ```powershell
-python manage.py test news
+python manage.py check
+python manage.py makemigrations --check --dry-run
+python manage.py migrate
+python manage.py setup_editorial_roles
+python manage.py test
 ```
 
-Verificaciones realizadas en este entorno: `manage.py check`, migraciones aplicadas y sin cambios pendientes, las cuatro pruebas de `news` y las 445 pruebas de la suite completa pasaron, portada/detalle/categoría responden 200, CSS e imagen multimedia sirven correctamente, Admin está registrado para las tres entidades, existe un superusuario local y el texto HTML aparece escapado.
+La suite ejecuta 13 pruebas y cubre registro válido/inválido, inicio/cierre, lector sin permisos, creación, edición y envío de borrador por redactor, bloqueo sobre noticia ajena y sobre borradores sin permiso de lectura, publicación por editor, orden de etiquetas, confirmación y borrado POST, detalle y filtros públicos, escapado, estados vacíos, paginación, CSS/JS/media, relaciones y reglas de borrado. `news/__init__.py` permite que el descubrimiento genérico encuentre la suite. El esquema aplicado conserva seis artículos publicados; el portal y Admin se verificaron con el cliente de pruebas.
 
-## Evidencias
+## Limitaciones conocidas
 
-- [Portada con seis noticias](evidencias/portada-noticias.png)
-- [Detalle y prueba de escapado HTML](evidencias/detalle-escapado-html.png)
-- [Listado de categoría](evidencias/categoria-tecnologia.png)
-
-Las capturas se generaron desde la aplicación servida localmente. Las cuentas, base de datos y ficheros bajo `media/` son datos locales ignorados por Git; el comando de carga vuelve a crear el conjunto de demostración al preparar otro entorno.
-
-## Estado de Git y entrega
-
-Los cambios se registraron en commits descriptivos y pequeños. La rama local `semana6` parte de una instantánea raíz independiente y conserva después los cuatro commits incrementales del laboratorio. La rama `main` sigue intacta. El remoto `origin` continúa apuntando a `DAE_Semana_5`; no se ha hecho push ni se ha redirigido a ese repositorio. El destino aún no tiene una URL configurada en este checkout; antes de publicar en `DAE_Semana6`, se debe enlazar el repositorio nuevo. El árbol de código del laboratorio no reemplaza ni elimina el portal de películas.
+- No se crea un superusuario automáticamente; se debe ejecutar `createsuperuser`.
+- La versión instalada para esta sesión (Django 6.1.1) difiere del rango declarado (Django 5.2.x); `check`, migraciones en seco y pruebas pasaron con la versión instalada, pero hace falta repetir las mismas comprobaciones con las dependencias instaladas desde `requirements.txt`.
+- El sitio se ha verificado mediante comprobaciones Django y pruebas automatizadas, no mediante una sesión visual en distintos dispositivos. Las tres capturas que ya estaban en `docs/evidencias/` pertenecen a la versión anterior y no deben considerarse evidencia visual de esta nueva interfaz.
+- No se añadieron comentarios ni gestión pública de categorías/etiquetas. El alcance editorial de este proyecto administra esas entidades desde Django Admin, con permisos de editor.
+- Esta carpeta no tiene `.git`; no se crearon commits ni se publicó el contenido. La entrega queda como árbol de archivos para revisión y configuración posterior del repositorio.
