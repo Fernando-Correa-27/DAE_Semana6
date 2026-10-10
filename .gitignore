@@ -1,36 +1,17 @@
-# Virtual environment
+__pycache__/
+*.py[cod]
+*.log
+*.sqlite3
+media/
+staticfiles/
 venv/
 .venv/
 env/
-
-# Python
-__pycache__/
-*.py[cod]
-*.egg-info/
-dist/
-build/
-
-# Django
-*.log
-db.sqlite3
-media/
-staticfiles/
-
-# Test
+.env
+.env.*
 .pytest_cache/
 .coverage
 htmlcov/
-
-# IDE
 .vscode/
 .idea/
-*.swp
-*.swo
-.obsidian/
-
-# Local tooling
-.opencode/
-
-# Environment
-.env
-.env.local
+.agents/

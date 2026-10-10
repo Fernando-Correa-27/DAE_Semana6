@@ -1,3 +1,0 @@
-"""
-Configuracion del proyecto movies.
-"""
